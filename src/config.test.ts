@@ -184,6 +184,24 @@ describe("Config", () => {
         });
       }
     );
+    it.each(["https://app.gather.town/app/AbCdEfGh1234/My%20Office"])(
+      "can extract Gather from description: %s",
+      async (url) => {
+        const config = await loadConfig();
+        expect(config.extractValidUrl({ description: url })).toMatchObject({
+          rule: { provider: "Gather" },
+        });
+      }
+    );
+    it("returns Gather rather than Google Meet", async () => {
+      const config = await loadConfig();
+      expect(
+        config.extractValidUrl({
+          hangoutLink: "https://meet.google.com/xxx",
+          description: "https://app.gather.town/app/AbCdEfGh1234/My%20Office",
+        })
+      ).toMatchObject({ rule: { provider: "Gather" } });
+    });
     it("returns null if the event does not have any valid URL", async () => {
       const config = await loadConfig();
       expect(config.extractValidUrl({})).toEqual(null);

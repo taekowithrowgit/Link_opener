@@ -42,6 +42,10 @@ const urlRules = [
     provider: "Slack Huddle",
   },
   {
+    test: /^https:\/\/app\.gather\.town\/app\//,
+    provider: "Gather",
+  },
+  {
     test: /^https:\/\/meet\.google\.com\//,
     provider: "Google Meet",
   },
