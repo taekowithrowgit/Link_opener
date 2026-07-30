@@ -11,6 +11,7 @@ export type CalendarAPIResponse = {
   };
   hangoutLink?: string;
   description?: string;
+  location?: string;
   conferenceData?: any;
 };
 

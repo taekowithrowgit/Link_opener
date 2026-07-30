@@ -73,6 +73,7 @@ class Config {
   extractValidUrl(event: {
     hangoutLink?: string;
     description?: string;
+    location?: string;
     conferenceData?: any;
   }): {
     url: string;
@@ -80,6 +81,7 @@ class Config {
   } | null {
     const urls: string[] = [
       ...getUrls(event.description ?? "", { requireSchemeOrWww: false }),
+      ...getUrls(event.location ?? "", { requireSchemeOrWww: false }),
     ];
     for (const rule of this.urlRules) {
       for (const url of urls) {

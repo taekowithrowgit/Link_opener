@@ -202,6 +202,15 @@ describe("Config", () => {
         })
       ).toMatchObject({ rule: { provider: "Gather" } });
     });
+    it.each(["https://app.gather.town/app/AbCdEfGh1234/My%20Office"])(
+      "can extract Gather from location: %s",
+      async (url) => {
+        const config = await loadConfig();
+        expect(config.extractValidUrl({ location: url })).toMatchObject({
+          rule: { provider: "Gather" },
+        });
+      }
+    );
     it("returns null if the event does not have any valid URL", async () => {
       const config = await loadConfig();
       expect(config.extractValidUrl({})).toEqual(null);
