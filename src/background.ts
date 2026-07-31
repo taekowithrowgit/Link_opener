@@ -83,8 +83,11 @@ async function calcPatches(
     if (willParticipate(e, email)) {
       if (
         alarms.has(e.id) &&
-        alarms.get(e.id)!.scheduledTime + config.offset ===
-          new Date(e.start.dateTime).getTime()
+        Math.abs(
+          alarms.get(e.id)!.scheduledTime +
+            config.offset -
+            new Date(e.start.dateTime).getTime()
+        ) < 5000
       ) {
         return { type: "noChange" };
       } else if (alarms.has(e.id)) {
