@@ -65,6 +65,23 @@ async function dispatch(message: IncomingMessage) {
   }
 }
 
+function resolveOpenUrl(
+  url: string,
+  rule: { provider: string },
+  userEmail: string
+): string {
+  if (rule.provider === "Google Meet") {
+    const tmp = new URL(url);
+    tmp.searchParams.set("authuser", userEmail);
+    return tmp.toString();
+  }
+  if (rule.provider === "Microsoft Teams") {
+    // Deep-links into the Teams desktop app instead of opening the web join page.
+    return url.replace(/^https:\/\//, "msteams://");
+  }
+  return url;
+}
+
 function isSameDay(a: Date, b: Date) {
   return (
     a.getFullYear() === b.getFullYear() &&
@@ -132,11 +149,7 @@ async function startWatching() {
       case "update": {
         const event = targetEvents.find((e) => e.id === p.id)!;
         let { url, rule } = config.extractValidUrl(event)!;
-        if (rule.provider === "Google Meet") {
-          const tmp = new URL(url);
-          tmp.searchParams.set("authuser", user.email);
-          url = tmp.toString();
-        }
+        url = resolveOpenUrl(url, rule, user.email);
         await chrome.alarms.clear(p.id);
         await Promise.all([
           chrome.alarms.create(p.id, {
@@ -155,11 +168,7 @@ async function startWatching() {
       case "add": {
         const event = targetEvents.find((e) => e.id === p.id)!;
         let { url, rule } = config.extractValidUrl(event)!;
-        if (rule.provider === "Google Meet") {
-          const tmp = new URL(url);
-          tmp.searchParams.set("authuser", user.email);
-          url = tmp.toString();
-        }
+        url = resolveOpenUrl(url, rule, user.email);
         await Promise.all([
           chrome.alarms.create(p.id, {
             when: p.when.getTime() - config.offset,
