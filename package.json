@@ -18,7 +18,7 @@
     "preview": "vite preview",
     "release": "git push origin --follow-tags main && gh release create v${npm_package_version} --generate-notes"
   },
-  "repository": "taekowithrowgit/crx-gcal-url-opener",
+  "repository": "taekowithrowgit/Link_opener",
   "author": "Taeco <taeko.forest@gmail.com>",
   "license": "MIT",
   "devDependencies": {

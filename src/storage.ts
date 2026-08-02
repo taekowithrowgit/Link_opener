@@ -8,9 +8,25 @@ export type ScheduledEvent = {
 
 const KEY_EVETNS = "events_1";
 const KEY_OPENED = "opened";
+const KEY_LAST_OPENED_TAB_ID = "lastOpenedTabId";
+
+export async function getLastOpenedTabId(): Promise<number | null> {
+  const { [KEY_LAST_OPENED_TAB_ID]: value } = await chrome.storage.local.get([
+    KEY_LAST_OPENED_TAB_ID,
+  ]);
+  return value ?? null;
+}
+
+export async function setLastOpenedTabId(tabId: number): Promise<void> {
+  await chrome.storage.local.set({ [KEY_LAST_OPENED_TAB_ID]: tabId });
+}
 
 export async function clearAllEvents(): Promise<void> {
-  await chrome.storage.local.remove([KEY_EVETNS, KEY_OPENED]);
+  await chrome.storage.local.remove([
+    KEY_EVETNS,
+    KEY_OPENED,
+    KEY_LAST_OPENED_TAB_ID,
+  ]);
 }
 
 export async function upsertEvent(
