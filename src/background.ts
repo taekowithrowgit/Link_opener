@@ -9,11 +9,9 @@ import {
   clearAllEvents,
   getAllEvents,
   getEvent,
-  getLastOpenedTabId,
   isOpened,
   markAsOpened,
   removeEvent,
-  setLastOpenedTabId,
   upsertEvent,
 } from "./storage";
 
@@ -78,23 +76,6 @@ function resolveOpenUrl(
     return tmp.toString();
   }
   return url;
-}
-
-async function openOrReuseTab(url: string): Promise<chrome.tabs.Tab> {
-  const lastTabId = await getLastOpenedTabId();
-  if (lastTabId != null) {
-    try {
-      const tab = await chrome.tabs.update(lastTabId, { url, active: true });
-      if (tab) {
-        return tab;
-      }
-    } catch {
-      // The previously opened tab was closed; fall through to opening a new one.
-    }
-  }
-  const tab = await chrome.tabs.create({ url });
-  await setLastOpenedTabId(tab.id!);
-  return tab;
 }
 
 function isSameDay(a: Date, b: Date) {
@@ -239,7 +220,7 @@ chrome.alarms.onAlarm.addListener(async (alerm) => {
         return;
       }
       await markAsOpened(alerm.name);
-      const tab = await openOrReuseTab(event.url);
+      const tab = await chrome.tabs.create({ url: event.url });
       await chrome.windows.update(tab.windowId, {
         focused: true,
         drawAttention: true,
